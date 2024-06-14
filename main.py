@@ -26,13 +26,32 @@ clock = pygame.time.Clock()
 class Bird(pygame.sprite.Sprite):
     def __init__(self, x, y) -> None:
         super().__init__()
-        self.image = pygame.image.load("assets/img/bird1.png")
+        self.counter = 0
+        self.index = 0
+        self.images = []
+        for num in range(1, 4):
+            img = pygame.image.load(f"assets/img/bird{num}.png")
+            self.images.append(img)
+        self.image = self.images[self.index]
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
+    
+    def update(self):
+        self.counter += 1
+        self.cooldown = 5
+
+        if self.counter > self.cooldown:
+            self.counter = 0
+            self.index += 1
+            if self.index >= len(self.images):
+                self.index = 0
+
+        self.image = self.images[self.index]
+
 
 
 bird_group = pygame.sprite.Group()
-flappybirdy = Bird(100, int(GAME_WIDTH / 2))
+flappybirdy = Bird(100, int(GAME_WIDTH / 2) - 50)
 
 bird_group.add(flappybirdy)
 
@@ -45,6 +64,7 @@ while True:
 
     # Draw Bird Group
     bird_group.draw(screen)
+    bird_group.update()
 
     # Set ground on the screen
     screen.blit(GROUND, (ground_scroll,532))
