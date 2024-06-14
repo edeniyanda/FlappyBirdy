@@ -32,7 +32,10 @@ while True:
     # Set ground on the screen
     screen.blit(GROUND, (ground_scroll,532))
 
-    # ground_scroll -= scroll_speed
+    ground_scroll -= scroll_speed
+
+    if abs(ground_scroll) > 36:
+        ground_scroll = 0
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
