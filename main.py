@@ -1,6 +1,6 @@
 import sys
 import pygame
-from pygame.locals import *
+from pygame.locals import *  
 
 # Initialize pygame
 pygame.init()
@@ -23,11 +23,28 @@ scroll_speed = 4
 clock = pygame.time.Clock()
 
 
+class Bird(pygame.sprite.Sprite):
+    def __init__(self, x, y) -> None:
+        super().__init__()
+        self.image = pygame.image.load("assets/img/bird1.png")
+        self.rect = self.image.get_rect()
+        self.rect.center = (x, y)
+
+
+bird_group = pygame.sprite.Group()
+flappybirdy = Bird(100, int(GAME_WIDTH / 2))
+
+bird_group.add(flappybirdy)
+
+
 # Game loop
 while True:
 
     # Set sky on the screen
     screen.blit(BACKGROUND, (0,0))
+
+    # Draw Bird Group
+    bird_group.draw(screen)
 
     # Set ground on the screen
     screen.blit(GROUND, (ground_scroll,532))
