@@ -39,15 +39,21 @@ class Bird(pygame.sprite.Sprite):
     
     def update(self):
 
-        self.velocity += 0.009
-
+        # Bird Gravity
+        self.velocity = self.velocity + 0.5 if self.velocity < 8 else 8
         if self.rect.bottom < 532:
             self.rect.y += self.velocity
-            
+
+        # Jumps 
+        if pygame.mouse.get_pressed()[0]:
+            self.velocity = - 8 
+       
+        # Bird Boundary
+        if self.rect.y <= 0:
+            self.rect.y = 0
 
         self.counter += 1
         self.cooldown = 5
-
 
         if self.counter > self.cooldown:
             self.counter = 0
@@ -57,10 +63,13 @@ class Bird(pygame.sprite.Sprite):
 
         self.image = self.images[self.index]
 
+        # Rotate Bird Wwhe falling
+        self.image = pygame.transform.rotate(self.images[self.index], self.velocity * -2)
+
 
 
 bird_group = pygame.sprite.Group()
-flappybirdy = Bird(100, int(GAME_WIDTH / 2) - 50)
+flappybirdy = Bird(200, int(GAME_WIDTH / 2) - 300)
 
 bird_group.add(flappybirdy)
 
