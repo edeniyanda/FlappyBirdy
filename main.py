@@ -25,7 +25,7 @@ ground_scroll = 0
 scroll_speed = 4
 
 # Pipe properties
-pipe_gap = 140 
+pipe_gap = 200 
 pipe_freq = 1500 # Milliseconds
 last_pipe = pygame.time.get_ticks() - pipe_freq
 
@@ -135,10 +135,13 @@ while True:
 
     # Draw Pipe Group
     pipe_group.draw(screen)
-    pipe_group.update()
 
     # Set ground on the screen
     screen.blit(GROUND, (ground_scroll, 532))
+
+    # Check for Collison
+    if pygame.sprite.groupcollide(bird_group, pipe_group, 0, 0) or flappybirdy.rect.top == 0:
+        GAMEOVER = True
     
     if GAMEOVER == False and START:
         # Bring new set of pipe on the screen
@@ -156,6 +159,8 @@ while True:
 
         if abs(ground_scroll) > 36:
             ground_scroll = 0
+            
+        pipe_group.update()
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -164,7 +169,7 @@ while True:
         if (event.type == pygame.MOUSEBUTTONDOWN and START == False) or GAMEOVER == True:
             START = True
             GAMEOVER = False
-            # flappybirdy.rect.y = bird_y
+            flappybirdy.rect.y = bird_y
 
     pygame.display.update()
     clock.tick(60)
