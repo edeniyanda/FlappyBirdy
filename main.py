@@ -1,6 +1,7 @@
 import sys
 import pygame
 from pygame.locals import *
+from random import randint
 
 
 # Initialize pygame
@@ -141,8 +142,9 @@ while True:
         # Bring new set of pipe on the screen
         time_now = pygame.time.get_ticks()
         if time_now - last_pipe > pipe_freq:
-            buttom_pipe = Pipe(GAME_WIDTH, int(GAME_HEIGHT / 2)- 65, -1)
-            top_pipe = Pipe(GAME_WIDTH, int(GAME_HEIGHT / 2)- 65, 1)
+            pipe_height = randint(-100, 100)
+            buttom_pipe = Pipe(GAME_WIDTH, int(GAME_HEIGHT / 2)- pipe_height - 50, -1)
+            top_pipe = Pipe(GAME_WIDTH, int(GAME_HEIGHT / 2)- pipe_height -50, 1)
             pipe_group.add(buttom_pipe)
             pipe_group.add(top_pipe)
             last_pipe = time_now
