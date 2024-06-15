@@ -23,10 +23,12 @@ pygame.display.set_caption("FLappyBirdy")
 ground_scroll = 0
 scroll_speed = 4
 
-# Pipe Gap
-pipe_gap = 70 
+# Pipe properties
+pipe_gap = 140 
+pipe_freq = 1500 # Milliseconds
+last_pipe = pygame.time.get_ticks() - pipe_freq
 
-# TImer
+# TImer 
 clock = pygame.time.Clock()
 
 
@@ -94,11 +96,14 @@ class Pipe(pygame.sprite.Sprite):
             self.image = pygame.image.load("assets/img/pipe.png")
             self.rect.topleft = [x , y + pipe_gap//2]
 
+    def update(self):
+        self.rect.x -= scroll_speed
+
 
 
 
 # Bird Default Coordinate
-bird_x, bird_y = 200, int(GAME_WIDTH / 2) - 300
+bird_x, bird_y = 200, GAME_HEIGHT//2
 
 # Bird sprite Group
 bird_group = pygame.sprite.Group()
@@ -132,7 +137,17 @@ while True:
     # Set ground on the screen
     screen.blit(GROUND, (ground_scroll, 532))
     
-    if GAMEOVER == False:
+    if GAMEOVER == False and START:
+        # Bring new set of pipe on the screen
+        time_now = pygame.time.get_ticks()
+        if time_now - last_pipe > pipe_freq:
+            buttom_pipe = Pipe(GAME_WIDTH, int(GAME_HEIGHT / 2)- 65, -1)
+            top_pipe = Pipe(GAME_WIDTH, int(GAME_HEIGHT / 2)- 65, 1)
+            pipe_group.add(buttom_pipe)
+            pipe_group.add(top_pipe)
+            last_pipe = time_now
+
+
         ground_scroll -= scroll_speed
 
         if abs(ground_scroll) > 36:
