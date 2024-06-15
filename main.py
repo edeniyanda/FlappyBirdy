@@ -11,6 +11,7 @@ GAME_HEIGHT = 700
 BACKGROUND = pygame.image.load("assets/img/bg4.png")
 GROUND = pygame.image.load("assets/img/ground.png")
 START = False
+GAMEOVER = False
 
 # Set Display
 screen = pygame.display.set_mode((GAME_WIDTH, GAME_HEIGHT))
@@ -39,13 +40,17 @@ class Bird(pygame.sprite.Sprite):
         self.rect.center = (x, y)
     
     def update(self):
-
+        global GAMEOVER, START
 
         if START:  
             # Bird Gravity
             self.velocity = self.velocity + 0.5 if self.velocity < 8 else 8
             if self.rect.bottom < 532:
                 self.rect.y += self.velocity
+            else:
+                GAMEOVER = True
+                START = False
+
 
         # Jumps 
         if pygame.mouse.get_pressed()[0]:
@@ -55,24 +60,30 @@ class Bird(pygame.sprite.Sprite):
         if self.rect.y <= 0:
             self.rect.y = 0
 
-        self.counter += 1
-        self.cooldown = 5
+        if GAMEOVER == False:
+            self.counter += 1
+            self.cooldown = 5
 
-        if self.counter > self.cooldown:
-            self.counter = 0
-            self.index += 1
-            if self.index >= len(self.images):
-                self.index = 0
+            if self.counter > self.cooldown:
+                self.counter = 0
+                self.index += 1
+                if self.index >= len(self.images):
+                    self.index = 0
 
-        self.image = self.images[self.index]
+            self.image = self.images[self.index]
 
-        # Rotate Bird Wwhe falling
-        self.image = pygame.transform.rotate(self.images[self.index], self.velocity * -2)
+            # Rotate Bird Wwhe falling
+            self.image = pygame.transform.rotate(self.images[self.index], self.velocity * -2)
+        else:
+            self.image = pygame.transform.rotate(self.images[self.index], -90)
 
 
+
+# Bird Default Coordinate
+bird_x, bird_y = 200, int(GAME_WIDTH / 2) - 300
 
 bird_group = pygame.sprite.Group()
-flappybirdy = Bird(200, int(GAME_WIDTH / 2) - 300)
+flappybirdy = Bird(bird_x, bird_y)
 
 bird_group.add(flappybirdy)
 
@@ -90,18 +101,20 @@ while True:
     bird_group.draw(screen)
     bird_group.update()
 
+    if GAMEOVER == False:
+        ground_scroll -= scroll_speed
 
-    ground_scroll -= scroll_speed
-
-    if abs(ground_scroll) > 36:
-        ground_scroll = 0
+        if abs(ground_scroll) > 36:
+            ground_scroll = 0
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
-        if event.type == pygame.MOUSEBUTTONDOWN and not(START):
+        if (event.type == pygame.MOUSEBUTTONDOWN and START == False) or GAMEOVER == True:
             START = True
+            GAMEOVER = False
+            flappybirdy.rect.y = bird_y
 
     pygame.display.update()
     clock.tick(60)
