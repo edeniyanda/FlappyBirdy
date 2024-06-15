@@ -99,6 +99,8 @@ class Pipe(pygame.sprite.Sprite):
 
     def update(self):
         self.rect.x -= scroll_speed
+        if self.rect.x < -5:
+            self.kill()
 
 
 
