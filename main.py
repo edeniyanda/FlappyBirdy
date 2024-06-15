@@ -10,6 +10,7 @@ GAME_WIDTH = 800
 GAME_HEIGHT = 700
 BACKGROUND = pygame.image.load("assets/img/bg4.png")
 GROUND = pygame.image.load("assets/img/ground.png")
+START = False
 
 # Set Display
 screen = pygame.display.set_mode((GAME_WIDTH, GAME_HEIGHT))
@@ -39,10 +40,12 @@ class Bird(pygame.sprite.Sprite):
     
     def update(self):
 
-        # Bird Gravity
-        self.velocity = self.velocity + 0.5 if self.velocity < 8 else 8
-        if self.rect.bottom < 532:
-            self.rect.y += self.velocity
+
+        if START:  
+            # Bird Gravity
+            self.velocity = self.velocity + 0.5 if self.velocity < 8 else 8
+            if self.rect.bottom < 532:
+                self.rect.y += self.velocity
 
         # Jumps 
         if pygame.mouse.get_pressed()[0]:
@@ -97,6 +100,8 @@ while True:
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
+        if event.type == pygame.MOUSEBUTTONDOWN and not(START):
+            START = True
 
     pygame.display.update()
     clock.tick(60)
