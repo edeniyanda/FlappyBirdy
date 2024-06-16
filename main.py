@@ -59,14 +59,12 @@ class Bird(pygame.sprite.Sprite):
             self.velocity = self.velocity + 0.5 if self.velocity < 8 else 8
             if self.rect.bottom < 532:
                 self.rect.y += self.velocity
-            else:
-                GAMEOVER = True
-                START = False
 
-
-        # Jumps 
-        if pygame.mouse.get_pressed()[0]:
-            self.velocity = - 8 
+            # Jumps
+            if GAMEOVER == False:
+                if pygame.mouse.get_pressed()[0]:
+                        self.velocity = - 8 
+            
        
         # Bird Boundary
         if self.rect.y <= 0:
@@ -124,7 +122,7 @@ buttom_pipe = Pipe(350, int(GAME_HEIGHT / 2)- 65, -1)
 top_pipe = Pipe(350, int(GAME_HEIGHT / 2)- 65, 1)
 
 bird_group.add(flappybirdy)
-pipe_group.add(buttom_pipe, top_pipe)
+# pipe_group.add(buttom_pipe, top_pipe)
 
 
 # Game loop
@@ -138,9 +136,16 @@ while True:
     bird_group.draw(screen)
     bird_group.update()
 
+    # Check if the bird is on the ground
+    if flappybirdy.rect.bottom > 532:      
+        GAMEOVER = True
+        START = False
+
+
     # Draw Pipe Group
     pipe_group.draw(screen)
 
+    # Scoring in Game 
     if len(pipe_group) > 0:
         if bird_group.sprites()[0].rect.left > pipe_group.sprites()[0].rect.left and bird_group.sprites()[0].rect.right < pipe_group.sprites()[0].rect.right and pass_pipe == False:
             pass_pipe = True
@@ -148,6 +153,7 @@ while True:
             if bird_group.sprites()[0].rect.left > pipe_group.sprites()[0].rect.right:
                 SCORE += 1
                 pass_pipe = False
+
     render_text(str(SCORE), FONT, FONT_COLOUR, GAME_WIDTH//2, 20)
     # Set ground on the screen
     screen.blit(GROUND, (ground_scroll, 532))
@@ -156,7 +162,7 @@ while True:
     if pygame.sprite.groupcollide(bird_group, pipe_group, 0, 0) or flappybirdy.rect.top == 0:
         GAMEOVER = True
     
-    if GAMEOVER == False and START:
+    if GAMEOVER == False and START == True:
         # Bring new set of pipe on the screen
         time_now = pygame.time.get_ticks()
         if time_now - last_pipe > pipe_freq:
@@ -166,7 +172,6 @@ while True:
             pipe_group.add(buttom_pipe)
             pipe_group.add(top_pipe)
             last_pipe = time_now
-
 
         ground_scroll -= scroll_speed
 
@@ -179,7 +184,7 @@ while True:
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
-        if (event.type == pygame.MOUSEBUTTONDOWN and START == False) or GAMEOVER == True:
+        if (event.type == pygame.MOUSEBUTTONDOWN and START == False) and GAMEOVER == False:
             START = True
             GAMEOVER = False
             # flappybirdy.rect.y = bird_y
