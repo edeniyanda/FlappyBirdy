@@ -12,8 +12,11 @@ GAME_WIDTH = 800
 GAME_HEIGHT = 700
 BACKGROUND = pygame.image.load("assets/img/bg4.png")
 GROUND = pygame.image.load("assets/img/ground.png")
+FONT = pygame.font.SysFont("Comic San Serif", 60)
+FONT_COLOUR = (255, 255, 255)
 START = False
 GAMEOVER = False
+SCORE = 0
 
 
 # Set Display
@@ -28,6 +31,7 @@ scroll_speed = 4
 pipe_gap = 200 
 pipe_freq = 1500 # Milliseconds
 last_pipe = pygame.time.get_ticks() - pipe_freq
+pass_pipe = False
 
 # TImer 
 clock = pygame.time.Clock()
@@ -102,8 +106,9 @@ class Pipe(pygame.sprite.Sprite):
         if self.rect.x < -5:
             self.kill()
 
-
-
+def render_text(text, font, text_colour, x_pos, y_pos):
+    text_img = font.render(text, True, text_colour)
+    screen.blit(text_img, (x_pos, y_pos))
 
 # Bird Default Coordinate
 bird_x, bird_y = 200, GAME_HEIGHT//2
@@ -136,6 +141,14 @@ while True:
     # Draw Pipe Group
     pipe_group.draw(screen)
 
+    if len(pipe_group) > 0:
+        if bird_group.sprites()[0].rect.left > pipe_group.sprites()[0].rect.left and bird_group.sprites()[0].rect.right < pipe_group.sprites()[0].rect.right and pass_pipe == False:
+            pass_pipe = True
+        if pass_pipe:
+            if bird_group.sprites()[0].rect.left > pipe_group.sprites()[0].rect.right:
+                SCORE += 1
+                pass_pipe = False
+    render_text(str(SCORE), FONT, FONT_COLOUR, GAME_WIDTH//2, 20)
     # Set ground on the screen
     screen.blit(GROUND, (ground_scroll, 532))
 
@@ -169,7 +182,7 @@ while True:
         if (event.type == pygame.MOUSEBUTTONDOWN and START == False) or GAMEOVER == True:
             START = True
             GAMEOVER = False
-            flappybirdy.rect.y = bird_y
+            # flappybirdy.rect.y = bird_y
 
     pygame.display.update()
     clock.tick(60)
