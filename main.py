@@ -12,6 +12,7 @@ GAME_WIDTH = 800
 GAME_HEIGHT = 700
 BACKGROUND = pygame.image.load("assets/img/bg4.png")
 GROUND = pygame.image.load("assets/img/ground.png")
+RESTART_BUTTON = pygame.image.load("assets/img/restart.png")
 FONT = pygame.font.SysFont("Comic San Serif", 60)
 FONT_COLOUR = (255, 255, 255)
 START = False
@@ -69,6 +70,7 @@ class Bird(pygame.sprite.Sprite):
         # Bird Boundary
         if self.rect.y <= 0:
             self.rect.y = 0
+            GAMEOVER = True
 
         if GAMEOVER == False:
             self.counter += 1
@@ -104,6 +106,28 @@ class Pipe(pygame.sprite.Sprite):
         if self.rect.x < -5:
             self.kill()
 
+class Button():
+    def __init__(self, x, y, image):
+        self.image = image
+        self.rect = self.image.get_rect()
+        self.rect.topleft = (x, y)
+
+    def draw(self):
+
+        button_action = False
+        # Get Mouse Position
+        mouse_position = pygame.mouse.get_pos()
+
+        # Check if the postion of the mouse is equal to the Button Position
+        if self.rect.collidepoint(mouse_position):
+            if pygame.mouse.get_pressed()[0]:
+                button_action = True
+
+
+        screen.blit(self.image, (self.rect.x, self.rect.y))
+
+        return button_action
+
 def render_text(text, font, text_colour, x_pos, y_pos):
     text_img = font.render(text, True, text_colour)
     screen.blit(text_img, (x_pos, y_pos))
@@ -124,6 +148,8 @@ top_pipe = Pipe(350, int(GAME_HEIGHT / 2)- 65, 1)
 bird_group.add(flappybirdy)
 # pipe_group.add(buttom_pipe, top_pipe)
 
+# Restart Button
+restart = Button(GAME_WIDTH//2 - 60, GAME_HEIGHT//2 - 50, RESTART_BUTTON)
 
 # Game loop
 while True:
@@ -161,6 +187,7 @@ while True:
     # Check for Collison
     if pygame.sprite.groupcollide(bird_group, pipe_group, 0, 0) or flappybirdy.rect.top == 0:
         GAMEOVER = True
+        
     
     if GAMEOVER == False and START == True:
         # Bring new set of pipe on the screen
@@ -179,6 +206,14 @@ while True:
             ground_scroll = 0
             
         pipe_group.update()
+
+    if GAMEOVER == True:
+        if restart.draw():
+            GAMEOVER = False
+            pipe_group.empty()
+            flappybirdy.rect.y = bird_y
+            flappybirdy.rect.x = bird_x
+            SCORE = 0
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
