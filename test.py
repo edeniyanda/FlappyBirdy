@@ -1,3 +1,5 @@
+#Script I used to compare the speed of two function 
+
 import timeit
 
 setup = '''
